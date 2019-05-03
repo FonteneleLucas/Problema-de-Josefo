@@ -13,6 +13,7 @@
 
 #include <cstdlib>
 #include <stdio.h>
+#include <time.h>
 
 using namespace std;
 
@@ -73,7 +74,7 @@ bool exibirLista(Lista* lista) {
     No* aux = lista->cabeca;
 
     if (aux == NULL)
-//        printf("Lista vazia\n");
+        //        printf("Lista vazia\n");
         return false;
 
     while (aux != NULL) {
@@ -202,6 +203,22 @@ int posicaoSair(Lista* lista, int sd, int m) {
     return ns;
 }
 
+int random_number(int min_num, int max_num) {
+    int result = 0, low_num = 0, hi_num = 0;
+
+    if (min_num < max_num) {
+        low_num = min_num;
+        hi_num = max_num + 1;
+    } else {
+        low_num = max_num + 1;
+        hi_num = min_num;
+    }
+
+    srand(time(NULL));
+    result = (rand() % (hi_num - low_num)) + low_num;
+    return result;
+}
+
 int main(int argc, char** argv) {
     Lista* lista = criarLista();
     Dado dado;
@@ -214,19 +231,29 @@ int main(int argc, char** argv) {
     }
 
     exibirLista(lista);
+    printf("\n");
 
     do {
-        printf("Soldado sorteado: ");
-        scanf("%d", &sd);
-        printf("M-ésimo soldado: ");
-        scanf("%d", &m);
+
+        int valor = random_number(0, lista->tamanho - 1);
+        No* no = indiceNo(lista, valor);
+        sd = no->dado.id;
+
+        printf("Soldado sorteado: %d\t", sd);
+        srand(time(NULL));
+        m = random_number(1, lista->tamanho * 6);
+        printf("M-ésimo soldado: %d\n", m);
+        //        scanf("%d", &m);
         int sairPosicao = posicaoSair(lista, sd, m);
         printf("Posicao sair: %d\t", sairPosicao);
-        printf("Posicao SD: %d\n", buscarId(lista, sd));
+        printf("Posicao SD: %d\n\n", buscarId(lista, sd));
         apagarIndice(lista, sairPosicao);
-        //printf("Size lista: %d\n", lista->tamanho);
+        //        printf("Size lista: %d\n", lista->tamanho);
+        
         exibirLista(lista);
+        printf("\n");
     } while (lista->tamanho > 1);
+
 
     return 0;
 }
